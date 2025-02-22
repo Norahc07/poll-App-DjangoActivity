@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Add Choice</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Add Choice for "{{ question.question_text }}"</h1>
+            <form action="{% url 'polls:save_choice' question.id %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="choice_text">Choice:</label>
+                    <input type="text" id="choice_text" name="choice_text" required>
+                </div>
+                <div class="button-group">
+                    <input type="submit" value="Add Choice">
+                    <a href="{% url 'polls:detail' question.id %}"><button type="button" class="cancel-button">Cancel</button></a>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

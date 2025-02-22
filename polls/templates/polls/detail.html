@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Poll Question</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </head>
+    <body>
+        <div class="container">
+            <form action="{% url 'polls:vote' question.id %}" method="post">
+                {% csrf_token %}
+                <fieldset>
+                    <legend><h1>{{ question.question_text }}</h1></legend>
+                    {% if error_message %}
+                        <p><strong>{{ error_message }}</strong></p>
+                    {% endif %}
+                    {% for choice in question.choice_set.all %}
+                        <div class="choice-item">
+                            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+                            <div class="choice-actions">
+                                <a href="{% url 'polls:edit_choice' question.id choice.id %}" class="edit-choice-btn">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" onclick="confirmDeleteChoice('{{ choice.id }}', '{{ question.id }}')" class="delete-choice-btn">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </fieldset>
+                <div class="button-group">
+                    <input type="submit" value="Vote">
+                    <a href="{% url 'polls:add_choice' question.id %}"><button type="button">Add Choice</button></a>
+                    <a href="{% url 'polls:index' %}"><button type="button">Back to Questions</button></a>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            function confirmDeleteChoice(choiceId, questionId) {
+                if (confirm('Are you sure you want to delete this choice?')) {
+                    window.location.href = `/polls/${questionId}/choice/${choiceId}/delete/`;
+                }
+            }
+        </script>
+    </body>
+</html>

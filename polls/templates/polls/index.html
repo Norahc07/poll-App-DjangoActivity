@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Poll App</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+        <!-- Add Font Awesome for the ellipsis icon -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <script src="{% static 'polls/dropdown.js' %}"></script>
+    </head>
+    <body>
+        <div class="dropdown-portal"></div>
+        <div class="container">
+            <h1>Welcome to Poll App</h1>
+            <h1>Questions</h1>
+            {% if latest_question_list %}
+                <ul class="question-list">
+                    {% for question in latest_question_list %}
+                        <li class="question-item">
+                            <a href="{% url 'polls:detail' question.id %}" class="question-link">
+                                <span class="question-text">{{ question.question_text }}</span>
+                                <span class="question-date">{{ question.pub_date|date:"M d, Y g:i A" }}</span>
+                            </a>
+                            <div class="dropdown-wrapper">
+                                <div class="dropdown">
+                                    <button class="dropbtn"><i class="fas fa-ellipsis-v"></i></button>
+                                    <div class="dropdown-content">
+                                        <a href="{% url 'polls:edit_question' question.id %}" class="edit-btn">Edit</a>
+                                        <a href="#" class="delete-btn" onclick="confirmDelete('{{ question.id }}')">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No polls are available.</p>
+            {% endif %}
+            <div class="button-group">
+                <a href="{% url 'polls:add_question' %}"><button type="button">Add New Question</button></a>
+            </div>
+        </div>
+
+        <!-- Add JavaScript for delete confirmation -->
+        <script>
+            // Add this function for dropdown toggle
+            function toggleDropdown(event, button) {
+                event.stopPropagation(); // Prevent event from bubbling up
+                const dropdowns = document.getElementsByClassName("dropdown-content");
+                
+                // Close all other dropdowns
+                for (let dropdown of dropdowns) {
+                    if (dropdown !== button.nextElementSibling) {
+                        dropdown.classList.remove('show');
+                    }
+                }
+                
+                // Toggle current dropdown
+                button.nextElementSibling.classList.toggle('show');
+            }
+
+            // Close dropdown when clicking outside
+            window.onclick = function(event) {
+                if (!event.target.matches('.dropbtn') && !event.target.matches('.fa-ellipsis-v')) {
+                    const dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (let dropdown of dropdowns) {
+                        if (dropdown.classList.contains('show')) {
+                            dropdown.classList.remove('show');
+                        }
+                    }
+                }
+            }
+
+            function confirmDelete(questionId) {
+                if (confirm('Are you sure you want to delete this question?')) {
+                    window.location.href = "{% url 'polls:index' %}" + questionId + "/delete/";
+                }
+            }
+        </script>
+    </body>
+</html>
